@@ -7,6 +7,7 @@
 #include "hash.h"
 #include "filter_policy.h"
 #include "mutexlock.h"
+#include "logging.h"
 
 int main() {
 	// Arena
@@ -41,6 +42,9 @@ int main() {
 	// Bloom filter
 	auto bloomFilter = leveldb::NewBloomFilterPolicy(10);
 	std::cout << bloomFilter->Name() << std::endl;
+
+	// Logging
+	std::cout << leveldb::NumberToString(100) << std::endl;
 
 	std::cout << "Hello World" << std::endl;
 
