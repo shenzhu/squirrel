@@ -29,6 +29,8 @@ add_executable(leveldb
 	util/logging.cpp
 	include/leveldb/cache.h
 	util/cache.cpp
+	util/testutil.h
+	util/testutil.cpp
 )
 
 target_include_directories(leveldb

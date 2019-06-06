@@ -9,6 +9,7 @@
 #include "mutexlock.h"
 #include "logging.h"
 #include "cache.h"
+#include "testutil.h"
 
 int main() {
 	// Arena
