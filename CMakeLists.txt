@@ -27,6 +27,8 @@ add_executable(leveldb
 	util/mutexlock.h
 	util/logging.h
 	util/logging.cpp
+	include/leveldb/cache.h
+	util/cache.cpp
 )
 
 target_include_directories(leveldb

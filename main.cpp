@@ -8,6 +8,7 @@
 #include "filter_policy.h"
 #include "mutexlock.h"
 #include "logging.h"
+#include "cache.h"
 
 int main() {
 	// Arena
@@ -45,6 +46,9 @@ int main() {
 
 	// Logging
 	std::cout << leveldb::NumberToString(100) << std::endl;
+
+	// Cache
+	auto lruCache = leveldb::NewLRUCache(10);
 
 	std::cout << "Hello World" << std::endl;
 
