@@ -28,6 +28,7 @@ add_executable(leveldb
 	include/leveldb/filter_policy.h
 	util/filter_policy.cpp
 	util/bloom.cpp
+	util/bloom_test.cpp
 	util/mutexlock.h
 	util/logging.h
 	util/logging.cpp

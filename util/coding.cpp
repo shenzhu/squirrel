@@ -2,12 +2,6 @@
 
 namespace leveldb {
 
-namespace {
-
-bool kLittleEndian = true;
-
-}
-
 void EncodeFixed32(char* buf, uint32_t value) {
 	if (kLittleEndian) {
 		memcpy(buf, &value, sizeof(value));
