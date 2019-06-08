@@ -19,6 +19,7 @@ add_executable(leveldb
 	port/thread_annotations.h
 	util/crc32c.h
 	util/crc32c.cpp
+	util/crc32c_test.cpp
 	util/hash.h
 	util/hash.cpp
 	util/hash_test.cpp

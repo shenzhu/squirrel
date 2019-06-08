@@ -32,13 +32,6 @@ int main() {
 	auto status = leveldb::Status::NotFound(sliceNotFound);
 	std::cout << status.ToString() << std::endl;
 
-	// Crc32c
-	uint32_t crc = { 100 };
-	const char* crc32cChar = new char('A');
-	std::cout << "Test of crc32: "
-		<< leveldb::crc32c::Extend(crc, crc32cChar, 1)
-		<< std::endl;
-
 	// Bloom filter
 	auto bloomFilter = leveldb::NewBloomFilterPolicy(10);
 	std::cout << bloomFilter->Name() << std::endl;
