@@ -9,9 +9,10 @@
 #include "mutexlock.h"
 #include "logging.h"
 #include "cache.h"
-#include "testutil.h"
+#include "testharness.h"
 
 int main() {
+	/*
 	// Arena
 	leveldb::Arena arena;
 
@@ -50,6 +51,7 @@ int main() {
 
 	// Cache
 	auto lruCache = leveldb::NewLRUCache(10);
+	*/
 
 	std::cout << "Hello World" << std::endl;
 
