@@ -39,9 +39,6 @@ int main() {
 		<< leveldb::crc32c::Extend(crc, crc32cChar, 1)
 		<< std::endl;
 
-	// Hash
-	std::cout << leveldb::Hash("hash", 4, 7) << std::endl;
-
 	// Bloom filter
 	auto bloomFilter = leveldb::NewBloomFilterPolicy(10);
 	std::cout << bloomFilter->Name() << std::endl;
@@ -53,6 +50,7 @@ int main() {
 	auto lruCache = leveldb::NewLRUCache(10);
 	*/
 
+	leveldb::test::RunAllTests();
 	std::cout << "Hello World" << std::endl;
 
     return 0;

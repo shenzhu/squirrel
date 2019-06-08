@@ -21,6 +21,7 @@ add_executable(leveldb
 	util/crc32c.cpp
 	util/hash.h
 	util/hash.cpp
+	util/hash_test.cpp
 	include/leveldb/filter_policy.h
 	util/filter_policy.cpp
 	util/bloom.cpp
