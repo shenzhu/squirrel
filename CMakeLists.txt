@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_FLAGS)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 project(leveldb)
 
@@ -9,11 +9,13 @@ add_executable(leveldb
 	main.cpp
 	util/arena.h
 	util/arena.cpp
+	util/arena_test.cpp
 	util/random.h
 	include/leveldb/slice.h
 	include/leveldb/status.h
 	util/status.cpp
 	util/coding.h
+	util/coding.cpp
 	port/port.h
 	port/port_stdcxx.h
 	port/thread_annotations.h
