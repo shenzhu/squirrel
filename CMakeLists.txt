@@ -40,6 +40,10 @@ add_executable(leveldb
 	util/testharness.cpp
 	include/leveldb/env.h
 	util/env.cpp
+	util/windows_logger.h
+	util/env_windows_tesT_helper.h
+	util/env_windows.cpp
+	util/env_windows_test.cpp
 )
 
 target_include_directories(leveldb
