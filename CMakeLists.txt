@@ -38,6 +38,8 @@ add_executable(leveldb
 	util/testutil.cpp
 	util/testharness.h
 	util/testharness.cpp
+	include/leveldb/env.h
+	util/env.cpp
 )
 
 target_include_directories(leveldb
