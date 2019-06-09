@@ -48,6 +48,8 @@ add_executable(leveldb
 	util/no_destructor.cpp
 	include/leveldb/comparator.h
 	util/comparator.cpp
+	include/leveldb/options.h
+	util/options.cpp
 )
 
 target_include_directories(leveldb
