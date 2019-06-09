@@ -44,6 +44,10 @@ add_executable(leveldb
 	util/env_windows_tesT_helper.h
 	util/env_windows.cpp
 	util/env_windows_test.cpp
+	util/no_destructor.h
+	util/no_destructor.cpp
+	include/leveldb/comparator.h
+	util/comparator.cpp
 )
 
 target_include_directories(leveldb
