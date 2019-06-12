@@ -50,6 +50,7 @@ add_executable(leveldb
 	util/comparator.cpp
 	include/leveldb/options.h
 	util/options.cpp
+	db/log_format.h
 )
 
 target_include_directories(leveldb
@@ -57,4 +58,5 @@ target_include_directories(leveldb
     util
 	include/leveldb
 	port
+	db
 )
