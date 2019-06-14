@@ -1,4 +1,4 @@
-#ifndef STORAGE_LEVELDB_DB_LOG_READER_H_
+﻿#ifndef STORAGE_LEVELDB_DB_LOG_READER_H_
 #define STORAGE_LEVELDB_DB_LOG_READER_H_
 
 #include <stdint.h>
@@ -65,6 +65,7 @@ private:
 	// Offset of the last record returned by ReadRecord.
 	uint64_t last_record_offset_;
 	// Offset of the first location past the end of buffer_.
+	// buffer_之后的的第一个位置
 	uint64_t end_of_buffer_offset_;
 
 	// Offset at which to start looking for the first record to return
