@@ -53,6 +53,7 @@ add_executable(leveldb
 	db/log_format.h
 	db/log_writer.h
 	db/log_writer.cpp
+	db/log_reader.h
 )
 
 target_include_directories(leveldb
