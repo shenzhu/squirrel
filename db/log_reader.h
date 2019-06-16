@@ -63,6 +63,7 @@ private:
 	bool eof_;   // Last Read() indicated EOF by returning < kBlockSize
 
 	// Offset of the last record returned by ReadRecord.
+	// 被ReadRecord返回的上一个record的offset
 	uint64_t last_record_offset_;
 	// Offset of the first location past the end of buffer_.
 	// buffer_之后的的第一个位置
@@ -84,7 +85,7 @@ private:
 		// * The record has an invalid CRC (ReadPhysicalRecord reports a drop)
 		// * The record is a 0-length record (No drop is reported)
 		// * The record is below constructor's initial_offset (No drop is reported)
-		kBadRecord = kMaxRecordType + 1
+		kBadRecord = kMaxRecordType + 2
 	};
 
 	// Skips all blocks that are completely before "initial_offset_".
