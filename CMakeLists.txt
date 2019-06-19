@@ -40,10 +40,6 @@ add_executable(leveldb
 	util/testharness.cpp
 	include/leveldb/env.h
 	util/env.cpp
-	util/windows_logger.h
-	util/env_windows_tesT_helper.h
-	util/env_windows.cpp
-	util/env_windows_test.cpp
 	util/no_destructor.h
 	util/no_destructor.cpp
 	include/leveldb/comparator.h
@@ -57,6 +53,17 @@ add_executable(leveldb
 	db/log_reader.cpp
 	db/log_test.cpp
 )
+
+# Detect platform
+if (WIN32)
+	target_sources(leveldb
+	  PRIVATE
+		util/windows_logger.h
+		util/env_windows_test_helper.h
+		util/env_windows.cpp
+		util/env_windows_test.cpp
+	)
+endif (WIN32)
 
 target_include_directories(leveldb
   PRIVATE
