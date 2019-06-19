@@ -124,11 +124,15 @@ public:
 	}
 
 	void ReopenForAppend() {
+		// 删除writer并且重新建立一个writer
+		// 在这种情况下，之前写下的数据应该还在
 		delete writer_;
 		writer_ = new Writer(&dest_, dest_.contents_.size());
 	}
 
 	void Write(const std::string& msg) {
+		// 首先确认当前处于read状态下
+		// 之后调用writer添加record
 		ASSERT_TRUE(!reading_) << "Write() after starting to read";
 		writer_->AddRecord(Slice(msg));
 	}
@@ -272,6 +276,95 @@ int LogTest::num_initial_offset_records_ = sizeof(LogTest::initial_offset_last_r
 
 TEST(LogTest, Empty) {
 	ASSERT_EQ("EOF", Read());
+}
+
+TEST(LogTest, Fragmentation) {
+	Write("small");
+	Write(BigString("medium", 50000));
+	Write(BigString("large", 100000));
+	ASSERT_EQ("small", Read());
+	ASSERT_EQ(BigString("medium", 50000), Read());
+	ASSERT_EQ(BigString("large", 100000), Read());
+	ASSERT_EQ("EOF", Read());
+}
+
+TEST(LogTest, MarginalTrailer) {
+	// Make a trailer that is exactly the same length as an empty record
+	const int n = kBlockSize - 2 * kHeaderSize;
+	Write(BigString("foo", n));
+	ASSERT_EQ(kBlockSize - kHeaderSize, WrittenBytes());
+	Write("");
+	Write("bar");
+	ASSERT_EQ(BigString("foo", n), Read());
+	ASSERT_EQ("", Read());
+	ASSERT_EQ("bar", Read());
+	ASSERT_EQ("EOF", Read());
+}
+
+TEST(LogTest, MarginalTrailer2) {
+	// Make a trailer that is exactly the same length as an empty record.
+	const int n = kBlockSize - 2 * kHeaderSize;
+	Write(BigString("foo", n));
+	ASSERT_EQ(kBlockSize - kHeaderSize, WrittenBytes());
+	Write("bar");
+	ASSERT_EQ(BigString("foo", n), Read());
+	ASSERT_EQ("bar", Read());
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ(0, DroppedBytes());
+	ASSERT_EQ("", ReportMessage());
+}
+
+TEST(LogTest, ShortTrailer) {
+	const int n = kBlockSize - 2 * kHeaderSize + 4;
+	Write(BigString("foo", n));
+	ASSERT_EQ(kBlockSize - kHeaderSize + 4, WrittenBytes());
+	Write("");
+	Write("bar");
+	ASSERT_EQ(BigString("foo", n), Read());
+	ASSERT_EQ("", Read());
+	ASSERT_EQ("bar", Read());
+	ASSERT_EQ("EOF", Read());
+}
+
+TEST(LogTest, AlignedEof) {
+	const int n = kBlockSize - 2 * kHeaderSize + 4;
+	Write(BigString("foo", n));
+	ASSERT_EQ(kBlockSize - kHeaderSize + 4, WrittenBytes());
+	ASSERT_EQ(BigString("foo", n), Read());
+	ASSERT_EQ("EOF", Read());
+}
+
+TEST(LogTest, OpenForAppend) {
+	Write("hello");
+	ReopenForAppend();
+	Write("world");
+	ASSERT_EQ("hello", Read());
+	ASSERT_EQ("world", Read());
+	ASSERT_EQ("EOF", Read());
+}
+
+TEST(LogTest, RandomRead) {
+	const int N = 500;
+	Random write_rnd(301);
+	for (int i = 0; i < N; i++) {
+		Write(RandomSkewedString(i, &write_rnd));
+	}
+	Random read_rnd(301);
+	for (int i = 0; i < N; i++) {
+		ASSERT_EQ(RandomSkewedString(i, &read_rnd), Read());
+	}
+	ASSERT_EQ("EOF", Read());
+}
+
+// Tests of all the error paths in log_reader.cpp follow:
+
+TEST(LogTest, ReadError) {
+	Write("foo");
+	// 设置SequentialFile有error
+	ForceError();
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ(kBlockSize, DroppedBytes());
+	ASSERT_EQ("OK", MatchError("read error"));
 }
 
 }  // namespace log

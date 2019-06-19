@@ -239,7 +239,12 @@ unsigned int Reader::ReadPhysicalRecord(Slice* result) {
 				continue;
 			}
 			else {
-
+				// Note that if buffer_ is non-empty, we have a truncated header at the
+				// end of the file, which can be caused by the writer crashing in the
+				// middle of writing the header. Instead of considering this an error,
+				// just report EOF.
+				buffer_.clear();
+				return kEof;
 			}
 		}
 
