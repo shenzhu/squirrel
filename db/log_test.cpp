@@ -173,6 +173,7 @@ public:
 
 	void FixChecksum(int header_offset, int len) {
 		// Compute crc of type/len/data
+		// contents_的前6个bytes是checksum和length，从第7个byte开始计算crc32
 		uint32_t crc = crc32c::Value(&dest_.contents_[header_offset + 6], 1 + len);
 		crc = crc32c::Mask(crc);
 		EncodeFixed32(&dest_.contents_[header_offset], crc);
@@ -365,6 +366,77 @@ TEST(LogTest, ReadError) {
 	ASSERT_EQ("EOF", Read());
 	ASSERT_EQ(kBlockSize, DroppedBytes());
 	ASSERT_EQ("OK", MatchError("read error"));
+}
+
+TEST(LogTest, BadRecordType) {
+	Write("foo");
+	// Type is stored in header[6]
+	IncrementByte(6, 100);
+	// 因为之前写入的foo是3个bytes，所以这里FixCheckSum的第二个参数是3
+	FixChecksum(0, 3);
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ(3, DroppedBytes());
+	ASSERT_EQ("OK", MatchError("unknown record type"));
+}
+
+TEST(LogTest, TruncatedTrailingRecordIsIgnored) {
+	Write("foo");
+	ShrinkSize(4);  // Drop all payload as well as a header type
+	ASSERT_EQ("EOF", Read());
+	// Truncated last record is ignored, not treated as an error.
+	ASSERT_EQ(0, DroppedBytes());
+	ASSERT_EQ("", ReportMessage());
+}
+
+TEST(LogTest, BadLength) {
+	const int kPayloadSize = kBlockSize - kHeaderSize;
+	Write(BigString("bar", kPayloadSize));
+	Write("foo");
+	// Least significant size byte is stored in header[4]
+	IncrementByte(4, 1);
+	// 因为上一行代码的修改，导致含有bar的那个record length偏大
+	// 而在这种情况下，reader会drop之前的块，抛出错误但继续阅读
+	// 所以会读到foo这条记录
+	ASSERT_EQ("foo", Read());
+	ASSERT_EQ(kBlockSize, DroppedBytes());
+	ASSERT_EQ("OK", MatchError("bad record length"));
+}
+
+TEST(LogTest, BadLengthAtEndIsIgnored) {
+	Write("foo");
+	ShrinkSize(1);
+	// 和上一个测试同样的错误，实际的长度(也就是从读入buffer里面的)
+	// 小于record中记录的length
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ(0, DroppedBytes());
+	ASSERT_EQ("", ReportMessage());
+}
+
+TEST(LogTest, ChecksumMismatch) {
+	Write("foo");
+	// Checksum存储在前4个bytes，这个操作更改了checksum的值
+	IncrementByte(0, 10);
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ(10, DroppedBytes());
+	ASSERT_EQ("OK", MatchError("checksum mismatch"));
+}
+
+TEST(LogTest, UnexpectedMiddleType) {
+	Write("foo");
+	SetByte(6, kMiddleType);
+	FixChecksum(0, 3);
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ(3, DroppedBytes());
+	ASSERT_EQ("OK", MatchError("missing start"));
+}
+
+TEST(LogTest, UnexpectedLastType) {
+	Write("foo");
+	SetByte(6, kLastType);
+	FixChecksum(0, 3);
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ(3, DroppedBytes());
+	ASSERT_EQ("OK", MatchError("missing start"));
 }
 
 }  // namespace log
