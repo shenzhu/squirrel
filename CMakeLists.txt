@@ -1,67 +1,73 @@
 cmake_minimum_required(VERSION 3.0)
 
+project(leveldb VERSION 1.0.0)
+
+# This project requires C++11
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_STANDARD 11)
 
-project(leveldb)
-
+# PROJECT_SOURCE_DIR: the folder of the CMakeLists.txt containing the most recent project command
+# CMAKE_SOURCE_DIR: top level folder where CMakeLists.txt
+# https://stackoverflow.com/questions/32028667/are-cmake-source-dir-and-project-source-dir-the-same-in-cmake
+# PROJECT_BINARY_DIR: where compile happens
 add_executable(leveldb
-	main.cpp
-	util/arena.h
-	util/arena.cpp
-	util/arena_test.cpp
-	util/random.h
-	include/leveldb/slice.h
-	include/leveldb/status.h
-	util/status.cpp
-	util/coding.h
-	util/coding.cpp
-	port/port.h
-	port/port_stdcxx.h
-	port/thread_annotations.h
-	util/crc32c.h
-	util/crc32c.cpp
-	util/crc32c_test.cpp
-	util/hash.h
-	util/hash.cpp
-	util/hash_test.cpp
-	include/leveldb/filter_policy.h
-	util/filter_policy.cpp
-	util/bloom.cpp
-	util/bloom_test.cpp
-	util/mutexlock.h
-	util/logging.h
-	util/logging.cpp
-	include/leveldb/cache.h
-	util/cache.cpp
-	util/testutil.h
-	util/testutil.cpp
-	util/testharness.h
-	util/testharness.cpp
-	include/leveldb/env.h
-	util/env.cpp
-	util/no_destructor.h
-	util/no_destructor.cpp
-	include/leveldb/comparator.h
-	util/comparator.cpp
-	include/leveldb/options.h
-	util/options.cpp
-	db/log_format.h
-	db/log_writer.h
-	db/log_writer.cpp
-	db/log_reader.h
-	db/log_reader.cpp
-	db/log_test.cpp
+	${PROJECT_SOURCE_DIR}/main.cpp
+	${PROJECT_SOURCE_DIR}/util/arena.h
+	${PROJECT_SOURCE_DIR}/util/arena.cpp
+	${PROJECT_SOURCE_DIR}/util/arena_test.cpp
+	${PROJECT_SOURCE_DIR}/util/random.h
+	${PROJECT_SOURCE_DIR}/include/leveldb/slice.h
+	${PROJECT_SOURCE_DIR}/include/leveldb/status.h
+	${PROJECT_SOURCE_DIR}/util/status.cpp
+	${PROJECT_SOURCE_DIR}/util/coding.h
+	${PROJECT_SOURCE_DIR}/util/coding.cpp
+	${PROJECT_SOURCE_DIR}/port/port.h
+	${PROJECT_SOURCE_DIR}/port/port_stdcxx.h
+	${PROJECT_SOURCE_DIR}/port/thread_annotations.h
+	${PROJECT_SOURCE_DIR}/util/crc32c.h
+	${PROJECT_SOURCE_DIR}/util/crc32c.cpp
+	${PROJECT_SOURCE_DIR}/util/crc32c_test.cpp
+	${PROJECT_SOURCE_DIR}/util/hash.h
+	${PROJECT_SOURCE_DIR}/util/hash.cpp
+	${PROJECT_SOURCE_DIR}/util/hash_test.cpp
+	${PROJECT_SOURCE_DIR}/include/leveldb/filter_policy.h
+	${PROJECT_SOURCE_DIR}/util/filter_policy.cpp
+	${PROJECT_SOURCE_DIR}/util/bloom.cpp
+	${PROJECT_SOURCE_DIR}/util/bloom_test.cpp
+	${PROJECT_SOURCE_DIR}/util/mutexlock.h
+	${PROJECT_SOURCE_DIR}/util/logging.h
+	${PROJECT_SOURCE_DIR}/util/logging.cpp
+	${PROJECT_SOURCE_DIR}/include/leveldb/cache.h
+	${PROJECT_SOURCE_DIR}/util/cache.cpp
+	${PROJECT_SOURCE_DIR}/util/testutil.h
+	${PROJECT_SOURCE_DIR}/util/testutil.cpp
+	${PROJECT_SOURCE_DIR}/util/testharness.h
+	${PROJECT_SOURCE_DIR}/util/testharness.cpp
+	${PROJECT_SOURCE_DIR}/include/leveldb/env.h
+	${PROJECT_SOURCE_DIR}/util/env.cpp
+	${PROJECT_SOURCE_DIR}/util/no_destructor.h
+	${PROJECT_SOURCE_DIR}/util/no_destructor.cpp
+	${PROJECT_SOURCE_DIR}/include/leveldb/comparator.h
+	${PROJECT_SOURCE_DIR}/util/comparator.cpp
+	${PROJECT_SOURCE_DIR}/include/leveldb/options.h
+	${PROJECT_SOURCE_DIR}/util/options.cpp
+	${PROJECT_SOURCE_DIR}/db/log_format.h
+	${PROJECT_SOURCE_DIR}/db/log_writer.h
+	${PROJECT_SOURCE_DIR}/db/log_writer.cpp
+	${PROJECT_SOURCE_DIR}/db/log_reader.h
+	${PROJECT_SOURCE_DIR}/db/log_reader.cpp
+	${PROJECT_SOURCE_DIR}/db/log_test.cpp
 )
 
 # Detect platform
+# See https://stackoverflow.com/questions/9160335/os-specific-instructions-in-cmake-how-to
 if (WIN32)
 	target_sources(leveldb
 	  PRIVATE
-		util/windows_logger.h
-		util/env_windows_test_helper.h
-		util/env_windows.cpp
-		util/env_windows_test.cpp
+		${PROJECT_SOURCE_DIR}/util/windows_logger.h
+		${PROJECT_SOURCE_DIR}/util/env_windows_test_helper.h
+		${PROJECT_SOURCE_DIR}/util/env_windows.cpp
+		${PROJECT_SOURCE_DIR}/util/env_windows_test.cpp
 	)
 endif (WIN32)
 
