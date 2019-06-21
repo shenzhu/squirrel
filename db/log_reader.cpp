@@ -32,7 +32,7 @@ Reader::~Reader() {
 bool Reader::SkipToInitialBlock() {
 	// 因为initial_offset的大小可能大于block size，所以要计算
 	// 一下在block中的偏移量
-	size_t offset_in_block = initial_offset_ & kBlockSize;
+	size_t offset_in_block = initial_offset_ % kBlockSize;
 	// 计算下一个block的地址
 	// 这个减法是计算之前所有需要跳过的block中最后一个的结束地址，这样也就得到了
 	// 下一个要开始的block的地址
