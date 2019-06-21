@@ -5,6 +5,7 @@
 #include "crc32c.h"
 #include "random.h"
 #include "testharness.h"
+#include <iostream>
 
 namespace leveldb {
 namespace log {
@@ -251,6 +252,7 @@ public:
 	}
 };
 
+// 要写的record的长度
 size_t LogTest::initial_offset_record_sizes_[] = {
 	10000,  // Two sizable records in first block
 	10000,
@@ -260,6 +262,7 @@ size_t LogTest::initial_offset_record_sizes_[] = {
 	log::kBlockSize - kHeaderSize, // Consume the entirely of block 4.
 };
 
+// 写了上面那些record之后下次开始读的offset
 uint64_t LogTest::initial_offset_last_record_offsets_[] = {
 	0,
 	kHeaderSize + 10000,
@@ -437,6 +440,98 @@ TEST(LogTest, UnexpectedLastType) {
 	ASSERT_EQ("EOF", Read());
 	ASSERT_EQ(3, DroppedBytes());
 	ASSERT_EQ("OK", MatchError("missing start"));
+}
+
+TEST(LogTest, UnexpectedFullType) {
+	Write("foo");
+	Write("bar");
+	SetByte(6, kFirstType);
+	FixChecksum(0, 3);
+	// 第一个record的应该是kFullType，但是被变成了kFirstType
+	// 因为后来的一个record也是kFullType，所以第二次读会把原来的
+	// temp data给覆盖掉，读到的是第二个record
+	ASSERT_EQ("bar", Read());
+	ASSERT_EQ("EOF", Read());
+	// 在kFirstType之后如果直接是kFullType之后，会report corruption
+	ASSERT_EQ(3, DroppedBytes());
+	ASSERT_EQ("OK", MatchError("partial record without end"));
+}
+
+TEST(LogTest, UnexpectedFirstType) {
+	Write("foo");
+	Write(BigString("bar", 100000));
+	SetByte(6, kFirstType);
+	FixChecksum(0, 3);
+	ASSERT_EQ(BigString("bar", 100000), Read());
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ(3, DroppedBytes());
+	ASSERT_EQ("OK", MatchError("partial record without end"));
+}
+
+TEST(LogTest, MissingLastIsIgnored) {
+	Write(BigString("bar", kBlockSize));
+	// Remove the LAST block, including header
+	// 把第二个block中7 byte header和7 byte数据给砍掉了
+	ShrinkSize(14);
+	// 这种情况相当于writer写着写着突然死掉了
+	// reader会报告kof错误，并且不作为corruption
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ("", ReportMessage());
+	ASSERT_EQ(0, DroppedBytes());
+}
+
+TEST(LogTest, PartialLastIsIgnored) {
+	Write(BigString("bar", kBlockSize));
+	// Cause a bad record length in the LAST block
+	ShrinkSize(1);
+	ASSERT_EQ("EOF", Read());
+	ASSERT_EQ("", ReportMessage());
+	ASSERT_EQ(0, DroppedBytes());
+}
+
+TEST(LogTest, SkipIntoMultiRecord) {
+	// Consider a fragmented record:
+	//    first(R1), middle(R1), last(R1), first(R2)
+	// If initial_offset points to a record after first(R1) but before first(R2)
+	// incomplete fragment errors are not actual erros, and must be suppressed
+	// until a new first or full record is encountered
+	Write(BigString("foo", 3 * kBlockSize));
+	Write("correct");
+	StartReadingAt(kBlockSize);
+
+	// 因为initial_offset > 0，所以reader开启了resynchronization模式，也就是说
+	// 当第一次进行read的时候，跳过所有type不是kFirstType或者kFullTypede的record，
+	// 在当前这个测试环境中，也就是前三个block都被跳过了
+	ASSERT_EQ("correct", Read());
+	ASSERT_EQ("", ReportMessage());
+	ASSERT_EQ(0, DroppedBytes());
+}
+
+TEST(LogTest, ErrorJoinsRecords) {
+	// Consider two fragmented records:
+	//    first(R1) last(R1) first(R2) last(R2)
+	// where the middle two fragments disappear.  We do not want
+	// first(R1), last(R2) to get joined and returned as a valid record.
+
+	// Write records taht span two blocks
+	Write(BigString("foo", kBlockSize));
+	Write(BigString("bar", kBlockSize));
+	Write("correct");
+
+	// Wipe the middle block
+	for (int offset = kBlockSize; offset < 2 * kBlockSize; offset++) {
+		// 其实这里用x去设置是很有讲究的，x的ASCII code是120，二进制表示为01111000
+		// 两个连续的x也就是0111100001111000，即十进制的30840
+		// +7 之后为30480，小于第二个完全读取第二个block之后的buffer size 32768
+		// 不会触发if (kHeaderSize + length > buffer_.size())这个check
+		SetByte(offset, 'x');
+	}
+
+	ASSERT_EQ("correct", Read());
+	ASSERT_EQ("EOF", Read());
+	const size_t dropped = DroppedBytes();
+	ASSERT_LE(dropped, 2 * kBlockSize + 100);
+	ASSERT_GE(dropped, 2 * kBlockSize);
 }
 
 }  // namespace log
