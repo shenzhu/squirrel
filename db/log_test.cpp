@@ -259,7 +259,7 @@ size_t LogTest::initial_offset_record_sizes_[] = {
 	2 * log::kBlockSize - 1000,  // Span three blocks
 	1,
 	13716,  // Consume all but two bytes of block 3.
-	log::kBlockSize - kHeaderSize, // Consume the entirely of block 4.
+	log::kBlockSize - kHeaderSize, // Consume the entirety of block 4.
 };
 
 // 写了上面那些record之后下次开始读的offset
@@ -532,6 +532,64 @@ TEST(LogTest, ErrorJoinsRecords) {
 	const size_t dropped = DroppedBytes();
 	ASSERT_LE(dropped, 2 * kBlockSize + 100);
 	ASSERT_GE(dropped, 2 * kBlockSize);
+}
+
+TEST(LogTest, ReadStart) {
+	CheckInitialOffsetRecord(0, 0);
+}
+
+TEST(LogTest, ReadSecondOneOff) {
+	CheckInitialOffsetRecord(1, 1);
+}
+
+TEST(LogTest, ReadSecondTenThousand) {
+	CheckInitialOffsetRecord(10000, 1);
+}
+
+TEST(LogTest, ReadSecondStart) {
+	CheckInitialOffsetRecord(10007, 1);
+}
+
+TEST(LogTest, ReadThirdOneOff) {
+	CheckInitialOffsetRecord(10008, 2);
+}
+
+TEST(LogTest, ReadThirdStart) {
+	CheckInitialOffsetRecord(20014, 2);
+}
+
+TEST(LogTest, ReadFourthOneOff) {
+	CheckInitialOffsetRecord(20015, 3);
+}
+
+TEST(LogTest, ReadFourthFirstBlockTrailer) {
+	CheckInitialOffsetRecord(log::kBlockSize - 4, 3);
+}
+
+TEST(LogTest, ReadFourthMiddleBlock) {
+	CheckInitialOffsetRecord(log::kBlockSize + 1, 3);
+}
+
+TEST(LogTest, ReadFourthLastBlock) {
+	CheckInitialOffsetRecord(2 * log::kBlockSize + 1, 3);
+}
+
+TEST(LogTest, ReadFourthStart) {
+	CheckInitialOffsetRecord(
+		2 * (kHeaderSize + 1000) + (2 * log::kBlockSize - 1000) + 3 * kHeaderSize,
+		3);
+}
+
+TEST(LogTest, ReadInitialOffsetIntoBlockPadding) {
+	CheckInitialOffsetRecord(3 * log::kBlockSize - 3, 5);
+}
+
+TEST(LogTest, ReadEnd) {
+	CheckOffsetPastEndReturnsNoRecords(0);
+}
+
+TEST(LogTest, ReadPastEnd) {
+	CheckOffsetPastEndReturnsNoRecords(5);
 }
 
 }  // namespace log
