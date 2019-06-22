@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.9)
 
 project(leveldb VERSION 1.0.0)
 
@@ -6,11 +6,28 @@ project(leveldb VERSION 1.0.0)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 11)
 
+# Add configure file, some pre-defined variables
+configure_file(
+    ${PROJECT_SOURCE_DIR}/port/port_config.h.in
+	${PROJECT_SOURCE_DIR}/port/port_config.h
+)
+
+# Load cmake module: TestBigEndian
+include(TestBigEndian)
+test_big_endian(LEVELDB_IS_BIG_ENDIAN)
+
+if (WIN32)
+	set(LEVELDB_PLATFORM_NAME LEVELDB_PLATFORM_WINDOWS)
+else (WIN32)
+	set(LEVELDB_PLATFORM_NAME LEVELDB_PLATFORM_POSIX)
+endif (WIN32)
+
 # PROJECT_SOURCE_DIR: the folder of the CMakeLists.txt containing the most recent project command
 # CMAKE_SOURCE_DIR: top level folder where CMakeLists.txt
 # https://stackoverflow.com/questions/32028667/are-cmake-source-dir-and-project-source-dir-the-same-in-cmake
 # PROJECT_BINARY_DIR: where compile happens
 add_executable(leveldb
+	${PROJECT_SOURCE_DIR}/port/port_config.h
 	${PROJECT_SOURCE_DIR}/main.cpp
 	${PROJECT_SOURCE_DIR}/util/arena.h
 	${PROJECT_SOURCE_DIR}/util/arena.cpp
@@ -77,4 +94,11 @@ target_include_directories(leveldb
 	include/leveldb
 	port
 	db
+)
+
+# This should be put after add_executable
+target_compile_definitions(leveldb
+  PRIVATE
+    LEVELDB_HAS_PORT_CONFIG_H=1
+	${LEVELDB_PLATFORM_NAME}=1
 )

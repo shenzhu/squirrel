@@ -3,7 +3,7 @@
 namespace leveldb {
 
 void EncodeFixed32(char* buf, uint32_t value) {
-	if (kLittleEndian) {
+	if (port::kLittleEndian) {
 		memcpy(buf, &value, sizeof(value));
 	}
 	else {
@@ -15,7 +15,7 @@ void EncodeFixed32(char* buf, uint32_t value) {
 }
 
 void EncodeFixed64(char* buf, uint64_t value) {
-	if (kLittleEndian) {
+	if (port::kLittleEndian) {
 		memcpy(buf, &value, sizeof(value));
 	}
 	else {

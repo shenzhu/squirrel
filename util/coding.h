@@ -7,14 +7,9 @@
 #include <string>
 
 #include "slice.h"
+#include "port.h"
 
 namespace leveldb {
-
-namespace {
-
-bool kLittleEndian = true;
-
-}
 
 // Lower-level versions of Put... that write directly into a character buffer
 // REQUIRES: dst has enough space for the value being written
@@ -25,7 +20,7 @@ extern void EncodeFixed64(char* dst, uint64_t value);
 // without any bounds checking.
 
 inline uint32_t DecodeFixed32(const char* ptr) {
-	if (kLittleEndian) {
+	if (port::kLittleEndian) {
 		uint32_t result;
 		memcpy(&result, ptr, sizeof(result));  // gcc optimizes this to a plain load
 		return result;

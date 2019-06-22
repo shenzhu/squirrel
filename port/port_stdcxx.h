@@ -11,7 +11,7 @@
 #if defined(LEVELDB_HAS_PORT_CONFIG_H)
 
 #if LEVELDB_HAS_PORT_CONFIG_H
-#include "port/port_config.h"
+#include "port_config.h"
 #endif  // LEVELDB_HAS_PORT_CONFIG_H
 
 #elif defined(__has_include)
@@ -41,7 +41,7 @@
 namespace leveldb {
 namespace port {
 
-static const bool kLittleEndian = false;
+static const bool kLittleEndian = !LEVELDB_IS_BIG_ENDIAN;
 
 class CondVar;
 
