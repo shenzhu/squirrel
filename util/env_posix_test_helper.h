@@ -1,15 +1,18 @@
-#ifndef STORAGE_LEVELDB_UTIL_ENV_WINDOWS_TEST_HELPER_H_
-#define STORAGE_LEVELDB_UTIL_ENV_WINDOWS_TEST_HELPER_H_
+#ifndef STORAGE_LEVELDB_UTIL_ENV_POSIX_TEST_HELPER_H_
+#define STORAGE_LEVELDB_UTIL_ENV_POSIX_TEST_HELPER_H_
 
 namespace leveldb {
 
-	class EnvWindowsTest;
+	class EnvPosixTest;
 
-	// A helper for the Windows Env to facilitate testing.
-	class EnvWindowsTestHelper {
+	// A helper for the POSIX Env to facilitate testing.
+	class EnvPosixTestHelper {
 	private:
-		friend class CorruptionTest;
-		friend class EnvWindowsTest;
+		friend class EnvPosixTest;
+
+		// Set the maximum number of read-only files that will be opened.
+		// Must be called before creating an Env.
+		static void SetReadOnlyFDLimit(int limit);
 
 		// Set the maximum number of read-only files that will be mapped via mmap.
 		// Must be called before creating an Env.
@@ -18,4 +21,4 @@ namespace leveldb {
 
 }  // namespace leveldb
 
-#endif  // STORAGE_LEVELDB_UTIL_ENV_WINDOWS_TEST_HELPER_H_
+#endif  // STORAGE_LEVELDB_UTIL_ENV_POSIX_TEST_HELPER_H_
