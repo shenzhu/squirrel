@@ -86,6 +86,14 @@ if (WIN32)
 		${PROJECT_SOURCE_DIR}/util/env_windows.cpp
 		${PROJECT_SOURCE_DIR}/util/env_windows_test.cpp
 	)
+else (WIN32)
+	target_sources(leveldb
+	  PRIVATE
+	    ${PROJECT_SOURCE_DIR}/util/posix_logger.cpp
+		${PROJECT_SOURCE_DIR}/util/env_posix_test_helper.h
+		${PROJECT_SOURCE_DIR}/util/env_posix.cpp
+		${PROJECT_SOURCE_DIR}/util/env_posix_test.cpp
+	)
 endif (WIN32)
 
 target_include_directories(leveldb
