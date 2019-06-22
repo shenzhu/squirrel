@@ -1,41 +1,40 @@
 #include "env.h"
 
 #include "port.h"
+#include "env_windows_test_helper.h"
 #include "testharness.h"
-#include "env_posix_test_helper.h"
 
 namespace leveldb {
 
-	static const int kDelayMicros = 100000;
-	static const int kReadOnlyFileLimit = 4;
 	static const int kMMapLimit = 4;
 
-	class EnvPosixTest {
+	class EnvWindowsTest {
 	public:
-		Env* env_;
-		EnvPosixTest() : env_(Env::Default()) { }
-
-		static void SetFileLimits(int read_only_file_limit, int mmap_limit) {
-			EnvPosixTestHelper::SetReadOnlyFDLimit(read_only_file_limit);
-			EnvPosixTestHelper::SetReadOnlyMMapLimit(mmap_limit);
+		static void SetFileLimits(int mmap_limit) {
+			EnvWindowsTestHelper::SetReadOnlyMMapLimit(mmap_limit);
 		}
+
+		EnvWindowsTest() : env_(Env::Default()) {}
+
+		Env* env_;
 	};
 
-	TEST(EnvPosixTest, TestOpenOnRead) {
+	TEST(EnvWindowsTest, TestOpenOnRead) {
 		// Write some test data to a single file that will be opened |n| times.
 		std::string test_dir;
 		ASSERT_OK(env_->GetTestDirectory(&test_dir));
 		std::string test_file = test_dir + "/open_on_read.txt";
 
 		FILE* f = fopen(test_file.c_str(), "w");
-		ASSERT_TRUE(f != NULL);
+		ASSERT_TRUE(f != nullptr);
 		const char kFileData[] = "abcdefghijklmnopqrstuvwxyz";
 		fputs(kFileData, f);
 		fclose(f);
 
 		// Open test file some number above the sum of the two limits to force
-		// open-on-read behavior of POSIX Env leveldb::RandomAccessFile.
-		const int kNumFiles = kReadOnlyFileLimit + kMMapLimit + 5;
+		// leveldb::WindowsEnv to switch from mapping the file into memory
+		// to basic file reading.
+		const int kNumFiles = kMMapLimit + 5;
 		leveldb::RandomAccessFile* files[kNumFiles] = { 0 };
 		for (int i = 0; i < kNumFiles; i++) {
 			ASSERT_OK(env_->NewRandomAccessFile(test_file, &files[i]));
@@ -53,3 +52,9 @@ namespace leveldb {
 	}
 
 }  // namespace leveldb
+
+int main(int argc, char** argv) {
+	// All tests currently run with the same read-only file limits.
+	leveldb::EnvWindowsTest::SetFileLimits(leveldb::kMMapLimit);
+	return leveldb::test::RunAllTests();
+}
