@@ -74,6 +74,8 @@ add_executable(leveldb
 	${PROJECT_SOURCE_DIR}/db/log_reader.h
 	${PROJECT_SOURCE_DIR}/db/log_reader.cpp
 	${PROJECT_SOURCE_DIR}/db/log_test.cpp
+	${PROJECT_SOURCE_DIR}/table/block_builder.h
+	${PROJECT_SOURCE_DIR}/table/block_builder.cpp
 )
 
 # Detect platform
@@ -102,6 +104,7 @@ target_include_directories(leveldb
 	include/leveldb
 	port
 	db
+	table
 )
 
 # This should be put after add_executable
