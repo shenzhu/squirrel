@@ -76,6 +76,9 @@ add_executable(leveldb
 	${PROJECT_SOURCE_DIR}/db/log_test.cpp
 	${PROJECT_SOURCE_DIR}/table/block_builder.h
 	${PROJECT_SOURCE_DIR}/table/block_builder.cpp
+	${PROJECT_SOURCE_DIR}/table/filter_block.h
+	${PROJECT_SOURCE_DIR}/table/filter_block.cpp
+	${PROJECT_SOURCE_DIR}/table/filter_block_test.cpp
 )
 
 # Detect platform
