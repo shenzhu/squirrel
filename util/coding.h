@@ -11,13 +11,20 @@
 
 namespace leveldb {
 
+// Standard Put... routines append to a string
+extern void PutFixed32(std::string* dst, uint32_t value);
+extern void PutFixed64(std::string* dst, uint64_t value);
+extern void PutVarint32(std::string* dst, uint32_t value);
+
 // Lower-level versions of Put... that write directly into a character buffer
 // REQUIRES: dst has enough space for the value being written
 extern void EncodeFixed32(char* dst, uint32_t value);
 extern void EncodeFixed64(char* dst, uint64_t value);
 
-// Lower-level versions of Get... that read directly from a character buffer
-// without any bounds checking.
+// Lower-level versions of Put... that write directly into a character buffer
+// and return a pointer just past the last byte written.
+// REQUIRES: dst has enough space for the value being written
+extern char* EncodeVarint32(char* dst, uint32_t value);
 
 inline uint32_t DecodeFixed32(const char* ptr) {
 	if (port::kLittleEndian) {
