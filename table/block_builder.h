@@ -50,4 +50,4 @@ private:
 
 }  // namespace leveldb
 
-#endif STORAGE_LEVELDB_TABLE_BLOCK_BUILDER_H_
+#endif // STORAGE_LEVELDB_TABLE_BLOCK_BUILDER_H_
