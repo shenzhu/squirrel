@@ -1,4 +1,4 @@
-#ifndef STORAGE_LEVELDB_INCLUDE_OPTIONS_H_
+﻿#ifndef STORAGE_LEVELDB_INCLUDE_OPTIONS_H_
 #define STORAGE_LEVELDB_INCLUDE_OPTIONS_H_
 
 #include <stddef.h>
@@ -106,6 +106,7 @@ struct Options {
   // leave this parameter alone.
   //
   // Default: 16
+  // 每隔几个key就直接存储一个重启点key
   int block_restart_interval;
 
   // Leveldb will write up to this amount of bytes to a file before
