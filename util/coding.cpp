@@ -56,7 +56,7 @@ char* EncodeVarint32(char* dst, uint32_t v) {
 		// 如果v小于16384，假如v=300(0000 0001 0010 1100)
 		// 先和128(0000 0000 1000 0000)按位或,
 		// 得到0000 0001 1010 1100
-		// 把低8位（1010 1100）给内存低字节
+		// 把低8位(1010 1100)给内存低字节
 		*(ptr++) = v | B;
 		// 把300(0000 0001 0010 1100)右移7位得到000 0000 0000 0001 0给内存高字节
 		*(ptr++) = v >> 7;
@@ -88,5 +88,89 @@ void PutVarint32(std::string* dst, uint32_t v) {
 	char* ptr = EncodeVarint32(buf, v);
 	dst->append(buf, ptr - buf);
 }
+
+char* EncodeVarint64(char* dst, uint64_t v) {
+	static const int B = 128;
+	unsigned char* ptr = reinterpret_cast<unsigned char*>(dst);
+	while (v >= B) {
+		// A & (B - 1) = A % B
+		*(ptr++) = (v & (B - 1)) | B;
+		v >>= 7;
+	}
+	*(ptr++) = static_cast<unsigned char>(v);
+	return reinterpret_cast<char*>(ptr);
+}
+
+void PutVarint64(std::string* dst, uint64_t v) {
+	// 对于64位整型，最多需要10个字节(10*8 - 10(标志位) > 64)
+	char buf[10];
+	char* ptr = EncodeVarint64(buf, v);
+	dst->append(buf, ptr - buf);
+}
+
+const char* GetVarint32PtrFallback(const char* p,
+	const char* limit,
+	uint32_t* value) {
+	uint32_t result = 0;
+	for (uint32_t shift = 0; shift <= 28 && p < limit; shift += 7) {
+		uint32_t byte = *(reinterpret_cast<const unsigned char*>(p));
+		p++;
+		if (byte & 128) {
+			// More bytes are present
+			result |= ((byte & 127) << shift);
+		}
+		else {
+			result |= (byte << shift);
+			*value = result;
+			return reinterpret_cast<const char*>(p);
+		}
+	}
+	return NULL;
+}
+
+bool GetVarint32(Slice* input, uint32_t* value) {
+	const char* p = input->data();
+	const char* limit = p + input->size();
+	const char* q = GetVarint32Ptr(p, limit, value);
+	if (q == NULL) {
+		return false;
+	}
+	else {
+		*input = Slice(q, limit - q);
+		return true;
+	}
+}
+
+const char* GetVarint64Ptr(const char* p, const char* limit, uint64_t* value) {
+	uint64_t result = 0;
+	for (uint32_t shift = 0; shift <= 63 && p < limit; shift += 7) {
+		uint64_t byte = *(reinterpret_cast<const unsigned char*>(p));
+		p++;
+		if (byte & 128) {
+			// More bytes are present
+			result |= ((byte & 127) << shift);
+		}
+		else {
+			result |= (byte << shift);
+			*value = result;
+			return reinterpret_cast<const char*>(p);
+		}
+	}
+	return NULL;
+}
+
+bool GetVarint64(Slice* input, uint64_t* value) {
+	const char* p = input->data();
+	const char* limit = p + input->size();
+	const char* q = GetVarint64Ptr(p, limit, value);
+	if (q == NULL) {
+		return false;
+	}
+	else {
+		*input = Slice(q, limit - q);
+		return true;
+	}
+}
+
 
 }  // namespace leveldb
