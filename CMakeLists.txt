@@ -16,6 +16,9 @@ configure_file(
 include(TestBigEndian)
 test_big_endian(LEVELDB_IS_BIG_ENDIAN)
 
+include(CheckLibraryExists)
+check_library_exists(snappy snappy_compress "" HAVE_SNAPPY)
+
 if (WIN32)
 	set(LEVELDB_PLATFORM_NAME LEVELDB_PLATFORM_WINDOWS)
 else (WIN32)
@@ -82,6 +85,8 @@ add_executable(leveldb
 	${PROJECT_SOURCE_DIR}/include/leveldb/iterator.h
 	${PROJECT_SOURCE_DIR}/table/iterator.cpp
 	${PROJECT_SOURCE_DIR}/table/iterator_wrapper.h
+	${PROJECT_SOURCE_DIR}/table/format.h
+	${PROJECT_SOURCE_DIR}/table/format.cpp
 )
 
 # Detect platform
@@ -119,3 +124,7 @@ target_compile_definitions(leveldb
     LEVELDB_HAS_PORT_CONFIG_H=1
 	${LEVELDB_PLATFORM_NAME}=1
 )
+
+if(HAVE_SNAPPY)
+	target_link_libraries(leveldb snappy)
+endif(HAVE_SNAPPY)
