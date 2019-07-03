@@ -87,6 +87,8 @@ add_executable(leveldb
 	${PROJECT_SOURCE_DIR}/table/iterator_wrapper.h
 	${PROJECT_SOURCE_DIR}/table/format.h
 	${PROJECT_SOURCE_DIR}/table/format.cpp
+	${PROJECT_SOURCE_DIR}/table/block.h
+	${PROJECT_SOURCE_DIR}/table/block.cpp
 )
 
 # Detect platform
