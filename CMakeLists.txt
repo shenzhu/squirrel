@@ -89,6 +89,8 @@ add_executable(leveldb
 	${PROJECT_SOURCE_DIR}/table/format.cpp
 	${PROJECT_SOURCE_DIR}/table/block.h
 	${PROJECT_SOURCE_DIR}/table/block.cpp
+	${PROJECT_SOURCE_DIR}/include/leveldb/table_builder.h
+	${PROJECT_SOURCE_DIR}/table/table_builder.cpp
 )
 
 # Detect platform
