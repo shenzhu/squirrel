@@ -91,6 +91,8 @@ add_executable(leveldb
 	${PROJECT_SOURCE_DIR}/table/block.cpp
 	${PROJECT_SOURCE_DIR}/include/leveldb/table_builder.h
 	${PROJECT_SOURCE_DIR}/table/table_builder.cpp
+	${PROJECT_SOURCE_DIR}/table/two_level_iterator.h
+	${PROJECT_SOURCE_DIR}/table/two_level_iterator.cpp
 )
 
 # Detect platform
