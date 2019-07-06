@@ -95,6 +95,8 @@ add_executable(leveldb
 	${PROJECT_SOURCE_DIR}/table/two_level_iterator.cpp
 	${PROJECT_SOURCE_DIR}/table/merger.h
 	${PROJECT_SOURCE_DIR}/table/merger.cpp
+	${PROJECT_SOURCE_DIR}/include/leveldb/table.h
+	${PROJECT_SOURCE_DIR}/table/table.cpp
 )
 
 # Detect platform
