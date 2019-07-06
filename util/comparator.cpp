@@ -48,7 +48,7 @@ public:
 		}
 	}
 
-	virtual void FindShortSucceesor(std::string* key) const {
+	virtual void FindShortSuccessor(std::string* key) const {
 		// Find first character that can be incremented
 		size_t n = key->size();
 		for (size_t i = 0; i < n; i++) {

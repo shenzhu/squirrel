@@ -51,7 +51,7 @@ public:
 	// i.e., an implementation of this method that does nothing is correct.
 	// 这个函数的作用就是：找一个>= *key的短字符串
 	// 简单的comparator实现可能不改变*key，这也是正确的
-	virtual void FindShortSucceesor(std::string* key) const = 0;
+	virtual void FindShortSuccessor(std::string* key) const = 0;
 };
 
 // Return a builtin comparator that uses lexicographic byte-wise
