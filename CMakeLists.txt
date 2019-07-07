@@ -100,6 +100,9 @@ add_executable(leveldb
 	${PROJECT_SOURCE_DIR}/db/dbformat.h
 	${PROJECT_SOURCE_DIR}/db/dbformat.cpp
 	${PROJECT_SOURCE_DIR}/db/dbformat_test.cpp
+	${PROJECT_SOURCE_DIR}/db/filename.h
+	${PROJECT_SOURCE_DIR}/db/filename.cpp
+	${PROJECT_SOURCE_DIR}/db/filename_test.cpp
 )
 
 # Detect platform
