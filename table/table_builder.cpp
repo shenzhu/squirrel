@@ -118,7 +118,7 @@ void TableBuilder::Add(const Slice& key, const Slice& value) {
 		std::string handle_encoding;
 		r->pending_handle.EncodeTo(&handle_encoding);
 		r->index_block.Add(r->last_key, Slice(handle_encoding));
-		r->pending_index_entry;
+		r->pending_index_entry = false;
 	}
 
 	if (r->filter_block != NULL) {
