@@ -11,7 +11,7 @@ namespace leveldb {
 
 class ArenaTest { };
 
-TEST(ArenaTest, Empty) {
+TEST(ArenaTest, EmptyArena) {
   Arena arena;
 }
 
