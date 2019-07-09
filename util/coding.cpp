@@ -108,6 +108,11 @@ void PutVarint64(std::string* dst, uint64_t v) {
 	dst->append(buf, ptr - buf);
 }
 
+void PutLengthPrefixedSlice(std::string* dst, const Slice& value) {
+	PutVarint32(dst, value.size());
+	dst->append(value.data(), value.size());
+}
+
 int VarintLength(uint64_t v) {
 	int len = 1;
 	while (v >= 128) {
@@ -178,6 +183,19 @@ bool GetVarint64(Slice* input, uint64_t* value) {
 	else {
 		*input = Slice(q, limit - q);
 		return true;
+	}
+}
+
+bool GetLengthPrefixedSlice(Slice* input, Slice* result) {
+	uint32_t len;
+	if (GetVarint32(input, &len) &&
+		input->size() >= len) {
+		*result = Slice(input->data(), len);
+		input->remove_prefix(len);
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
