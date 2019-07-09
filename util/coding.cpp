@@ -108,6 +108,15 @@ void PutVarint64(std::string* dst, uint64_t v) {
 	dst->append(buf, ptr - buf);
 }
 
+int VarintLength(uint64_t v) {
+	int len = 1;
+	while (v >= 128) {
+		v >>= 7;
+		len++;
+	}
+	return len;
+}
+
 const char* GetVarint32PtrFallback(const char* p,
 	const char* limit,
 	uint32_t* value) {

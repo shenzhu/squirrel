@@ -29,6 +29,9 @@ extern bool GetVarint64(Slice* input, uint64_t* value);
 extern const char* GetVarint32Ptr(const char* p, const char* limit, uint32_t* v);
 extern const char* GetVarint64Ptr(const char* p, const char* limit, uint64_t* v);
 
+// Returns the length of the varint32 or varint64 encoding of "v"
+extern int VarintLength(uint64_t v);
+
 // Lower-level versions of Put... that write directly into a character buffer
 // REQUIRES: dst has enough space for the value being written
 extern void EncodeFixed32(char* dst, uint32_t value);
